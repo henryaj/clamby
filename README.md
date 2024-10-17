@@ -93,6 +93,7 @@ Configuration is rather limited right now. You can exclude the check if `clamsca
       :check => false,
       :daemonize => false,
       :config_file => nil,
+      :freshclam_config_file => nil,
       :error_clamscan_missing => true,
       :error_clamscan_client_error => false,
       :error_file_missing => true,
@@ -112,6 +113,8 @@ Configuration is rather limited right now. You can exclude the check if `clamsca
 I highly recommend using the `daemonize` set to `true`. This will allow for clamscan to remain in memory and will not have to load for each virus scan. It will save several seconds per request.
 
 To specify a config file for clamdscan to use, you can set `config_file` with the relevant path. See [this page](https://linux.die.net/man/5/clamd.conf) for more information about the config file.
+
+You can also specify a config file for freshclam to use by setting `freshclam_config_file`. This will override `config_file` when calling `Clamby.update`.
 
 #### Error suppression
 
