@@ -55,7 +55,8 @@ module Clamby
     def self.freshclam
       args = []
       args << "--datadir=#{Clamby.config[:datadir]}" if Clamby.config[:datadir]
-      new.run 'freshclam', *args
+      args << "--config-file=#{Clamby.config[:freshclam_config_file]}" if Clamby.config[:freshclam_config_file]
+      new.run 'freshclam', *args, skip_config: true
     end
 
     # Show the ClamAV version. Also acts as a quick check if ClamAV functions.
@@ -71,19 +72,21 @@ module Clamby
     # Examples:
     #   run('clamscan', file, '--verbose')
     #   run('clamscan', '-V')
-    def run(executable, *args)
+    def run(executable, *args, skip_config: false)
       executable_full = executable_path(executable)
-      self.command = args | default_args
+      self.command = args | default_args(skip_config:)
       self.command = command.sort.unshift(executable_full)
 
-      system(self.command.join(' '), system_options)
+      system(command.join(' '), system_options)
     end
 
     private
 
-    def default_args
+    def default_args(skip_config: false)
       args = []
-      args << "--config-file=#{Clamby.config[:config_file]}" if Clamby.config[:daemonize] && Clamby.config[:config_file]
+      if !skip_config && (Clamby.config[:daemonize] && Clamby.config[:config_file])
+        args << "--config-file=#{Clamby.config[:config_file]}"
+      end
       args << '--quiet' if Clamby.config[:output_level] == 'low'
       args << '--verbose' if Clamby.config[:output_level] == 'high'
       args
